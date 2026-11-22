@@ -1,0 +1,57 @@
+import QtQuick
+import qs.Commons
+import qs.Commons as Commons
+
+// A small labelled button: the text is the label, `primary` fills it with
+// the accent colour.
+Rectangle {
+  id: root
+
+  property string label: ""
+  property bool primary: false
+
+  signal clicked()
+
+  implicitWidth: text.implicitWidth + Style.spacing.rowPaddingX * 2
+  implicitHeight: text.implicitHeight + Style.spacing.controlGap * 2
+  radius: Style.cornerRadius
+  color: root.primary
+    ? (mouse.containsMouse ? Qt.lighter(Commons.Color.accent, 1.1) : Commons.Color.accent)
+    : (mouse.containsMouse ? Style.hoverFillFor(Commons.Color.foreground, Commons.Color.foreground) : "transparent")
+  border.width: root.primary && !root.activeFocus ? 0 : 1
+  border.color: root.activeFocus ? Commons.Color.accent : Commons.Color.popups.border
+
+  Keys.onPressed: (event) => {
+    if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
+      root.clicked()
+      event.accepted = true
+    }
+  }
+
+  // Held narrower than its natural width, the label fits as qs.Ui Button's
+  // does: it spends half the padding, then shrinks to fit, and elides only
+  // when even the smallest size does not.
+  Text {
+    id: text
+    anchors.centerIn: parent
+    width: Math.max(0, Math.min(implicitWidth, root.width - Style.spacing.rowPaddingX))
+    fontSizeMode: Text.HorizontalFit
+    minimumPixelSize: Math.round(Style.font.bodySmall * 0.75)
+    elide: Text.ElideRight
+    horizontalAlignment: Text.AlignHCenter
+    textFormat: Text.PlainText
+    text: root.label
+    font.family: Style.font.family
+    font.pixelSize: Style.font.bodySmall
+    font.bold: root.primary
+    color: root.primary ? Commons.Color.popups.background : Commons.Color.popups.text
+  }
+
+  MouseArea {
+    id: mouse
+    anchors.fill: parent
+    hoverEnabled: true
+    cursorShape: Qt.PointingHandCursor
+    onClicked: root.clicked()
+  }
+}
