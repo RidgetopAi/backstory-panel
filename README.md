@@ -15,18 +15,59 @@ store directly.
 
 ## Install
 
+Backstory has two parts: the `backstory` daemon and CLI, and this panel. Nothing
+needs root; everything goes under your home directory.
+
+**1. The daemon**, from the prebuilt release (x86_64):
+
 ```sh
-yay -S backstory                          # the daemon + CLI (AUR)
-systemctl --user enable --now backstory   # start the memory daemon
-backstory install                         # hook up the agents it detects (claude, codex, hermes, pi)
-backstory backfill claude                 # optional: import your existing Claude Code history
+cd "$(mktemp -d)"
+curl -LO https://github.com/RidgetopAi/backstory/releases/download/v1.3.2/backstory-1.3.2-linux-amd64.tar.gz
+curl -LO https://github.com/RidgetopAi/backstory/releases/download/v1.3.2/SHA256SUMS
+sha256sum -c SHA256SUMS
+tar -xzf backstory-1.3.2-linux-amd64.tar.gz
+install -Dm755 backstory-1.3.2-linux-amd64/backstory ~/.local/bin/backstory
+install -Dm644 backstory-1.3.2-linux-amd64/backstory.service ~/.config/systemd/user/backstory.service
+systemctl --user daemon-reload
+systemctl --user enable --now backstory
+```
+
+**2. Hook up your agents** (claude, codex, hermes, pi: whichever it finds):
+
+```sh
+backstory install
+backstory backfill claude    # optional: import your existing Claude Code history
+```
+
+**3. The panel:**
+
+```sh
 omarchy plugin add https://github.com/RidgetopAi/backstory-panel --enable
 ```
 
-Optional: the package ships a Hyprland snippet at
-`/usr/share/backstory/hyprland/backstory.lua`. It sizes and places the panel window
-and binds **Ctrl+Shift+B** to open it. Copy it to `~/.config/hypr/backstory.lua` and
-add `require("hypr.backstory")` to your `hyprland.lua`.
+Optional: a Hyprland snippet that sizes and places the panel window and binds
+**Ctrl+Shift+B** to open it:
+
+```sh
+curl -fLo ~/.config/hypr/backstory.lua https://raw.githubusercontent.com/RidgetopAi/backstory/v1.3.2/ops/hyprland/backstory.lua
+```
+
+then add `require("hypr.backstory")` to your `hyprland.lua`.
+
+**Or build from source** instead of steps 1 and 3. This needs Go 1.27 or newer
+(`omarchy-install-dev-env go`, or Install > Development > Go in the Omarchy menu):
+
+```sh
+git clone --branch v1.3.2 https://github.com/RidgetopAi/backstory
+cd backstory && make install
+```
+
+`make install` installs the daemon, this panel and the Hyprland snippet in one go.
+Then run step 2.
+
+**Updating:** repeat step 1 with the new version, then
+`omarchy plugin update ridgetopai.backstory`. From source, check out the new tag and
+run `make install` again; it updates both.
 
 ## What it runs
 
@@ -52,8 +93,10 @@ the optional ssh sync between your own machines (`backstory install sync`).
 omarchy plugin remove ridgetopai.backstory
 backstory install --remove                # unhook the agents
 systemctl --user disable --now backstory
-yay -R backstory
+rm -f ~/.local/bin/backstory ~/.config/systemd/user/backstory.service ~/.config/hypr/backstory.lua
 ```
+
+Remove the `require("hypr.backstory")` line from `hyprland.lua` if you added it.
 
 Your memory stays in `~/.local/share/backstory` until you delete it.
 
