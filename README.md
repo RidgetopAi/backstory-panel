@@ -22,12 +22,12 @@ needs root; everything goes under your home directory.
 
 ```sh
 cd "$(mktemp -d)"
-curl -LO https://github.com/RidgetopAi/backstory/releases/download/v1.3.4/backstory-1.3.4-linux-amd64.tar.gz
-curl -LO https://github.com/RidgetopAi/backstory/releases/download/v1.3.4/SHA256SUMS
+curl -LO https://github.com/RidgetopAi/backstory/releases/download/v1.3.5/backstory-1.3.5-linux-amd64.tar.gz
+curl -LO https://github.com/RidgetopAi/backstory/releases/download/v1.3.5/SHA256SUMS
 sha256sum -c SHA256SUMS
-tar -xzf backstory-1.3.4-linux-amd64.tar.gz
-install -Dm755 backstory-1.3.4-linux-amd64/backstory ~/.local/bin/backstory
-install -Dm644 backstory-1.3.4-linux-amd64/backstory.service ~/.config/systemd/user/backstory.service
+tar -xzf backstory-1.3.5-linux-amd64.tar.gz
+install -Dm755 backstory-1.3.5-linux-amd64/backstory ~/.local/bin/backstory
+install -Dm644 backstory-1.3.5-linux-amd64/backstory.service ~/.config/systemd/user/backstory.service
 systemctl --user daemon-reload
 systemctl --user enable --now backstory
 ```
@@ -49,7 +49,7 @@ Optional: a Hyprland snippet that sizes and places the panel window and binds
 **Ctrl+Shift+B** to open it:
 
 ```sh
-curl -fLo ~/.config/hypr/backstory.lua https://raw.githubusercontent.com/RidgetopAi/backstory/v1.3.4/ops/hyprland/backstory.lua
+curl -fLo ~/.config/hypr/backstory.lua https://raw.githubusercontent.com/RidgetopAi/backstory/v1.3.5/ops/hyprland/backstory.lua
 ```
 
 then add `require("hypr.backstory")` to your `hyprland.lua`.
@@ -58,7 +58,7 @@ then add `require("hypr.backstory")` to your `hyprland.lua`.
 (`omarchy-install-dev-env go`, or Install > Development > Go in the Omarchy menu):
 
 ```sh
-git clone --branch v1.3.4 https://github.com/RidgetopAi/backstory
+git clone --branch v1.3.5 https://github.com/RidgetopAi/backstory
 cd backstory && make install
 ```
 
@@ -75,7 +75,7 @@ run `make install` again; it updates both.
 Every command the plugin can run is listed in `js/launchers.js`:
 
 - `backstory this-week`, `records`, `tools`: reads the memory, all with `--json`.
-- `backstory affirm`, `done`, `delete`, `purge`: only when you press the matching
+- `backstory affirm`, `done`, `dismiss`, `delete`, `purge`: only when you press the matching
   button. Edit opens `backstory edit` in a terminal through `xdg-terminal-exec`.
 - `omarchy agent prompt`, `omarchy agent --pick`, `omarchy-default-agent`: used by
   Continue / Resume to start your agent.
